@@ -158,6 +158,7 @@ type UploadWork struct {
 	MD5  string
 }
 
+// 提交文件上传记录，使文件直链生效。
 func (w UploadWork) Record() (string, error) {
 	apiKey, sha1Key := RandKeyConfig()
 	resourceUrl := "https://files.imdodo.com/dodo/" + w.MD5 + w.Ext
