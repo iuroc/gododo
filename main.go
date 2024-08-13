@@ -28,7 +28,10 @@ func main() {
 		}
 		path := TrimPathInput(scanner.Text())
 		work, err := dodo.NewUploadWork(path, userInfo.Token, userInfo.UID)
-		if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("❗ 错误: 文件不存在，请检查路径是否正确。")
+			continue
+		} else if err != nil {
 			fmt.Println("❗ 错误:", err)
 			continue
 		}
