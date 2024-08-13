@@ -10,7 +10,7 @@
 
 <img width="800" src="https://github.com/user-attachments/assets/6d5a26d3-5768-44d9-8829-0ddfb7d692ca" />
 
-### 安卓 Termux
+## 安卓 Termux
 
 <img width="800" src="https://github.com/user-attachments/assets/bb831095-bfec-4b26-ac31-315184d30ff2" />
 
