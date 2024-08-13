@@ -15,14 +15,15 @@ import (
 )
 
 func main() {
-	fmt.Println("DoDo 文件直链获取工具 [github.com/iuroc/gododo]")
 	scanner := bufio.NewScanner(os.Stdin)
+	PrintHeader()
 	userInfo := GetUserInfo()
+	ClearTerminal()
+	PrintHeader()
 	for {
-		fmt.Printf("\n%s\n\n", strings.Repeat("-", 40))
+		fmt.Printf("%s\n\n", strings.Repeat("-", 40))
 		fmt.Print("🚩 输入文件路径或拖拽文件到此处: ")
 		if !scanner.Scan() {
-			fmt.Println("❗ ", scanner.Err())
 			continue
 		}
 		path := TrimPathInput(scanner.Text())
@@ -50,7 +51,12 @@ func main() {
 			continue
 		}
 		fmt.Println("🎉 上传成功:", resourceURL)
+		fmt.Println()
 	}
+}
+
+func PrintHeader() {
+	fmt.Print("DoDo 文件直链获取工具 [github.com/iuroc/gododo]\n\n")
 }
 
 // TrimPathInput 去除路径两端的特殊字符。
@@ -62,19 +68,28 @@ func TrimPathInput(input string) string {
 func GetUserInfo() *UserInfo {
 	data, err := os.ReadFile("userInfo.json")
 	needQR := false
+	encryptedUserInfo := &UserInfo{}
+	var userInfo *UserInfo
 	if os.IsNotExist(err) {
 		needQR = true
 	} else if err != nil {
 		log.Fatalln("[os.ReadFile] userInfo 文件读取失败", err)
+	} else {
+		err = json.Unmarshal(data, encryptedUserInfo)
+		if err != nil {
+			needQR = true
+		} else {
+			userInfo, err = encryptedUserInfo.Decrypt()
+			needQR = err != nil || !userInfo.Check()
+		}
 	}
-	var userInfo UserInfo
-	err = json.Unmarshal(data, &userInfo)
-	needQR = err != nil || !userInfo.Check()
 	if needQR {
 		qr, info, err := biliqr.NewLoginQR(qrcode.Low)
 		if err != nil {
 			log.Fatalln("[biliqr.NewLoginQR] 创建二维码失败", err)
 		}
+		fmt.Println("请使用哔哩哔哩 APP 扫描下方二维码:")
+		fmt.Println()
 		fmt.Println(qr.ToSmallString(false))
 		for {
 			status, err := biliqr.GetThirdQRStatus(info.OauthKey)
@@ -86,14 +101,20 @@ func GetUserInfo() *UserInfo {
 				if err != nil {
 					log.Fatalln("dodo.GetTokenAndUID", err)
 				}
-				userInfo.Token = token
-				userInfo.UID = uid
-				userInfo.Save("userInfo.json")
-				return &userInfo
+				userInfo = &UserInfo{
+					Token: token,
+					UID:   uid,
+				}
+				encryptedUserInfo, err = userInfo.Encrypt()
+				if err != nil {
+					log.Fatalln("[userInfo.Encrypt]", err)
+				}
+				encryptedUserInfo.Save("userInfo.json")
+				return userInfo
 			}
 		}
 	}
-	return &userInfo
+	return userInfo
 }
 
 type UserInfo struct {
@@ -102,12 +123,12 @@ type UserInfo struct {
 }
 
 // Check 校验 Token 和 UID 的有效性。
-func (info UserInfo) Check() bool {
+func (info *UserInfo) Check() bool {
 	return dodo.CheckTokenAndUID(info.Token, info.UID)
 }
 
 // Save 以 JSON 格式保存 Token 和 UID 到文件。
-func (info UserInfo) Save(path string) {
+func (info *UserInfo) Save(path string) {
 	data, err := json.Marshal(info)
 	if err != nil {
 		log.Fatalln("[json.Marshal]", err)
@@ -116,4 +137,37 @@ func (info UserInfo) Save(path string) {
 	if err != nil {
 		log.Fatalln("[os.WriteFile]", err)
 	}
+}
+
+func (info *UserInfo) Encrypt() (*UserInfo, error) {
+	aesConfig, err := NewAESConfig()
+	if err != nil {
+		return nil, err
+	}
+	return &UserInfo{
+		Token: aesConfig.Encrypt([]byte(info.Token)),
+		UID:   aesConfig.Encrypt([]byte(info.UID)),
+	}, nil
+}
+
+func (info *UserInfo) Decrypt() (*UserInfo, error) {
+	aesConfig, err := NewAESConfig()
+	if err != nil {
+		return nil, err
+	}
+	token, err := aesConfig.Decrypt(info.Token)
+	if err != nil {
+		return nil, err
+	}
+	uid, err := aesConfig.Decrypt(info.UID)
+	if err != nil {
+		return nil, err
+	}
+	return &UserInfo{
+		Token: token,
+		UID:   uid,
+	}, nil
+}
+func ClearTerminal() {
+	fmt.Print("\x1b[H\x1b[2J")
 }
