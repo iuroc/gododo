@@ -64,7 +64,7 @@ func PrintHeader() {
 
 // TrimPathInput 去除路径两端的特殊字符。
 func TrimPathInput(input string) string {
-	return regexp.MustCompile(`^[\s&'"]+|[\s&'"]+$`).ReplaceAllString(input, "")
+	return regexp.MustCompile(`^[\s&'"]+|[\s&'"]+$|^file:///`).ReplaceAllString(input, "")
 }
 
 // GetUserInfo 获取用户信息，如果不存在，则要求用户扫码登录。
