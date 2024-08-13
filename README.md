@@ -4,6 +4,12 @@
 
 ## 截图展示
 
+## Windows
+
+<img width="800" src="https://github.com/user-attachments/assets/ac414180-21bb-47c7-8323-2a9b91cdb5a3" />
+
+<img width="800" src="https://github.com/user-attachments/assets/6d5a26d3-5768-44d9-8829-0ddfb7d692ca" />
+
 ### 安卓 Termux
 
 ![image](https://github.com/user-attachments/assets/a6f0bb68-44a7-40b1-801d-dfb34a2524b9)
