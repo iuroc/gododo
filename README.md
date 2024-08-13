@@ -12,7 +12,8 @@
 
 ### 安卓 Termux
 
-![image](https://github.com/user-attachments/assets/a6f0bb68-44a7-40b1-801d-dfb34a2524b9)
+![a7b7d4bc165065689f421c0294e1ac9](https://github.com/user-attachments/assets/bb831095-bfec-4b26-ac31-315184d30ff2)
+
 
 ## 作为模块
 
