@@ -67,6 +67,7 @@ func TestUpload(t *testing.T) {
 			}
 		} else if status.Success() {
 			token, uid, err := dodo.GetTokenAndUID(status.Data.TmpToken)
+			fmt.Println("[CheckTokenAndUID]", dodo.CheckTokenAndUID(token, uid))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -79,7 +80,7 @@ func TestUpload(t *testing.T) {
 				t.Fatal(err)
 			}
 			if history.HasRecord {
-				fmt.Println("读取历史记录成功 👉", history.ResourceUrl)
+				fmt.Println("读取历史记录成功 👉", history.ResourceURL)
 			}
 			if err = work.Upload(); err != nil {
 				t.Fatal(err)
@@ -98,4 +99,8 @@ func TestUpload(t *testing.T) {
 		}
 		time.Sleep(time.Second)
 	}
+}
+
+func TestCheckTokenAndUID(t *testing.T) {
+	fmt.Println(dodo.CheckTokenAndUID("1234", "1234"))
 }

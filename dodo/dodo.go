@@ -319,7 +319,7 @@ func (w UploadWork) History() (*UploadHistory, error) {
 
 type UploadHistory struct {
 	HasRecord   bool   `json:"hasRecord"`
-	ResourceUrl string `json:"resourceUrl"`
+	ResourceURL string `json:"resourceUrl"`
 }
 
 func (w UploadWork) Config() (*UploadConfig, error) {
@@ -374,4 +374,14 @@ func GetFileMD5(path string) (string, error) {
 	}
 	md5Hash := hash.Sum(nil)
 	return hex.EncodeToString(md5Hash), nil
+}
+
+// 校验 Token 和 UID 的有效性。
+func CheckTokenAndUID(token string, uid string) bool {
+	work := UploadWork{
+		Token: token,
+		UID:   uid,
+	}
+	_, err := work.History()
+	return err == nil
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
-// NewLoginQRInfo 获取全新的登录二维码的信息，其中的 LoginInfo.URL 用于生成二维码。
+// NewLoginQRInfo 创建登录二维码的信息，其中的 LoginInfo.URL 用于生成二维码。
 func NewLoginQRInfo() (*LoginQRInfo, error) {
 	url := "https://passport.bilibili.com/qrcode/getLoginUrl"
 	data, err := SimpleGet(url)
@@ -39,7 +39,7 @@ type LoginQRInfo struct {
 	OauthKey string `json:"oauthKey"`
 }
 
-// GetLoginQRImage 获取等待扫描的登录二维码。
+// GetLoginQRImage 创建等待扫描的登录二维码。
 // 可以使用 ToSmallString 方法生成可输出终端的二维码。
 //
 // level - qrcode.Low - 7% - int(0)
